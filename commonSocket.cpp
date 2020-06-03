@@ -14,8 +14,27 @@ common::Socket::~Socket() {
     close(fd);
 }
 
-void common::Socket::send(char* buffer, size_t length) {}
-void common::Socket::receive(char* buffer, size_t length) {}
+size_t common::Socket::sendBuffer(char* buffer, size_t length) {
+    size_t sent = 0;
+    while (sent < length) {
+        size_t sended = send(fd, &buffer[sent], (size_t)length-sent,
+            MSG_NOSIGNAL);
+        if (sended < 0) throw std::exception();
+        sent += sended;
+    }
+    return sent;
+}
+
+size_t common::Socket::receiveBuffer(char* buffer, size_t length) {
+    size_t readed_size = 0;
+    while (readed_size < length) {
+        size_t res = recv(fd, (void*)&buffer[readed_size],
+            length-readed_size, 0);
+        if (res <= 0) throw std::exception();
+        readed_size+=res;
+    }
+    return readed_size;
+}
 
 void common::Socket::acquireFd() {
     if ((fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)

@@ -15,8 +15,8 @@ namespace common
 
         public:
         explicit Socket(std::string& service);
-        virtual void send(char* buffer, size_t length);
-        virtual void receive(char* buffer, size_t length);
+        virtual size_t sendBuffer(char* buffer, size_t length);
+        virtual size_t receiveBuffer(char* buffer, size_t length);
         virtual ~Socket();
     };
 
