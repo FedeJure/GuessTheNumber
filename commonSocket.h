@@ -12,6 +12,7 @@ namespace common
         std::string service;
         sockaddr_in ip4addr;
         void acquireFd();
+        void setOptions();
 
         public:
         explicit Socket(std::string& service);
@@ -26,16 +27,25 @@ namespace common
 
         public:
         SocketServer(std::string& service, int maxConnection);
-        SocketServer(std::string& host, std::string& service);
         int acceptConnection();
         ~SocketServer();
 
         private:
-        void setOptions();
         void bindSocket();
         void startListen();
     };
-} // namespace server
+
+    class SocketClient : Socket {
+        std::string host;
+
+        public:
+        SocketClient(std::string& providedHost, std::string& service);
+        ~SocketClient();
+
+        private:
+        void connectSocket();        
+    };
+} // namespace common
 
 
 #endif
