@@ -16,8 +16,8 @@ namespace server
             numbersFileName = std::string(argv[2]);
         }
 
-        std::string getService();
-        std::string getNumbersFileName();
+        std::string& getService();
+        std::string& getNumbersFileName();
     };
     
 } // server
