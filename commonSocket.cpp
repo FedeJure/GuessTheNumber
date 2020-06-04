@@ -5,6 +5,8 @@
 #include <unistd.h>
 #include <string>
 #include <netdb.h>
+#include <vector>
+#include <iostream>
 #include "./commonSocket.h"
 
 common::Socket::Socket(std::string& providedService)
@@ -13,10 +15,13 @@ common::Socket::Socket(std::string& providedService)
     setOptions();
 }
 
-common::Socket::~Socket() {
-    shutdown(fd, SHUT_RDWR);
-    close(fd);
+common::Socket::Socket(int fd, sockaddr_in ip4addr) {
+    this->fd = fd;
+    this->ip4addr = ip4addr;
+    this->service = ip4addr.sin_port;
 }
+
+common::Socket::~Socket() {}
 
 void common::Socket::setOptions() {
     ip4addr.sin_family = AF_INET;
@@ -24,23 +29,23 @@ void common::Socket::setOptions() {
     ip4addr.sin_port = htons(std::stoi(service));
 }
 
-size_t common::Socket::sendBuffer(char* buffer, size_t length) {
+size_t common::Socket::sendBuffer(std::vector<char>& buffer) {
     size_t sent = 0;
-    while (sent < length) {
-        size_t sended = send(fd, &buffer[sent], (size_t)length-sent,
+    while (sent < buffer.size()) {
+        size_t sended = send(fd, &buffer[sent], buffer.size()-sent,
             MSG_NOSIGNAL);
-        if (sended < 0) throw std::exception();
+        if (sended < 0) throw common::ClosedConnectionError("Sending buffer");
         sent += sended;
     }
     return sent;
 }
 
-size_t common::Socket::receiveBuffer(char* buffer, size_t length) {
+size_t common::Socket::receiveBuffer(std::vector<char>& buffer) {
     size_t readed_size = 0;
-    while (readed_size < length) {
-        size_t res = recv(fd, (void*)&buffer[readed_size],
-            length-readed_size, 0);
-        if (res <= 0) throw std::exception();
+    while (readed_size < buffer.size()) {
+        size_t res = recv(fd, &buffer[readed_size],
+            buffer.size()-readed_size, 0);
+        if (res <= 0) throw common::ClosedConnectionError("Receiving buffer");
         readed_size+=res;
     }
     return readed_size;
@@ -51,23 +56,38 @@ void common::Socket::acquireFd() {
         throw std::exception();
 }
 
-common::SocketServer::SocketServer(std::string& service, int maxConnections) 
-    : common::Socket(service), maxConnections(maxConnections) {
+int common::Socket::Fd() {
+    return fd;
+}
+
+void common::Socket::shutdownSocket() {
+    shutdown(fd, SHUT_RDWR);
+}
+
+void common::Socket::closeSocket() {
+    close(fd);
+}
+
+common::SocketServer::SocketServer(std::string& service, int mConnections)
+    : common::Socket(service), maxConnections(mConnections) {
     bindSocket();
     startListen();
 }
 
-int common::SocketServer::acceptConnection() {
+common::SocketServer::~SocketServer() {
+}
+
+common::Socket common::SocketServer::acceptConnection() {
     size_t socket_size = sizeof(ip4addr);
-    int accepted = accept(fd, (struct sockaddr*) &ip4addr,
+    int accepted = accept(fd, (sockaddr*) &ip4addr,
         (socklen_t*)&socket_size);
     if (accepted < -1) throw std::exception();
-    connected_clients.push_back(accepted);
-    return accepted;
+    common::Socket newSocket(accepted, ip4addr);
+    return newSocket;
 }
 
 void common::SocketServer::bindSocket() {
-    int binded = bind(fd, (const struct sockaddr*)&ip4addr,
+    int binded = bind(fd, (const sockaddr*)&ip4addr,
         sizeof(ip4addr));
     if (binded == -1) {
         throw std::exception();
@@ -77,12 +97,6 @@ void common::SocketServer::bindSocket() {
 void common::SocketServer::startListen() {
     if (listen(fd, maxConnections) < 0) {
         throw std::exception();
-    }
-}
-
-common::SocketServer::~SocketServer() {
-    for (int clients : connected_clients) {
-        close(clients);
     }
 }
 

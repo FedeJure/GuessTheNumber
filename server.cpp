@@ -1,22 +1,28 @@
 #include <string>
 #include "server.h"
+#include "./commonDebug.h"
 
 server::Server::Server(std::string& numbersFileName,std::string& service)
     : running(true),
       fileReader(numbersFileName),
       localSocket(service, MAX_CONNECTIONS) {
     thread = std::thread(&server::Server::start, this);
+    std::cout<<"Init server with fd: "<< localSocket.Fd()<< std::endl;
 }
 
 void server::Server::start() {
     while (running) {
-        int clientFd = localSocket.acceptConnection();
-        ClientConnection* connection = new ClientConnection(clientFd);
-        connections.push_back(connection);
+        common::Socket peer = localSocket.acceptConnection();
+        ClientConnection* connection = new ClientConnection(peer);
+        connections.push_back(std::move(connection));
         for (size_t i = 0; i < connections.size(); i++) {
             ClientConnection* con = connections[i];
-            if (!con->isRunning()) con->stop();
-            connections.erase(connections.begin()+i);
+            if (!con->isRunning()) {
+                std::cout<<"Connection removed from clients"<< std::endl;
+                con->stop();
+                connections.erase(connections.begin()+i);
+                delete con;
+            }
         }
     }
 }

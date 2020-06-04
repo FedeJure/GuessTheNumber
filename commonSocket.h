@@ -16,18 +16,21 @@ namespace common
 
         public:
         explicit Socket(std::string& service);
-        virtual size_t sendBuffer(char* buffer, size_t length);
-        virtual size_t receiveBuffer(char* buffer, size_t length);
+        Socket(int id, sockaddr_in ip4addr);
+        int Fd();
+        void shutdownSocket();
+        void closeSocket();
+        virtual size_t sendBuffer(std::vector<char>& buffer);
+        virtual size_t receiveBuffer(std::vector<char>& buffer);
         virtual ~Socket();
     };
 
-    class SocketServer : Socket {
+    class SocketServer : public Socket {
         int maxConnections;
-        std::vector<int> connected_clients;
 
         public:
-        SocketServer(std::string& service, int maxConnection);
-        int acceptConnection();
+        SocketServer(std::string& service, int mConnections);
+        common::Socket acceptConnection();
         ~SocketServer();
 
         private:
@@ -35,7 +38,7 @@ namespace common
         void startListen();
     };
 
-    class SocketClient : Socket {
+    class SocketClient : public Socket {
         std::string host;
 
         public:
@@ -47,6 +50,22 @@ namespace common
     };
 
     void closeConnection(int fd);
+
+    class ClosedConnectionError: virtual public std::exception {
+        protected:
+        std::string error_message;
+        
+        public:
+        explicit ClosedConnectionError(const std::string& msg):
+            error_message(msg)
+            {}
+
+        virtual ~ClosedConnectionError() throw() {}
+        virtual const char* what() const throw() {
+            return error_message.c_str();
+        }
+    };
+
 } // namespace common
 
 
