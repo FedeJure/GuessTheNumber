@@ -45,6 +45,8 @@ namespace common
         private:
         void connectSocket();        
     };
+
+    void closeConnection(int fd);
 } // namespace common
 
 

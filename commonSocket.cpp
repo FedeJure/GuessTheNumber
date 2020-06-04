@@ -117,3 +117,7 @@ void common::SocketClient::connectSocket() {
 }
 
 common::SocketClient::~SocketClient() {}
+
+void common::closeConnection(int fd) {
+    close(fd);
+}
