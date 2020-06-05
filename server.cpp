@@ -17,6 +17,7 @@ void server::Server::start() {
     while (running) {
         common::Socket peer = localSocket.acceptConnection();
         std::string numberToGuess = fileReader.getNext();
+        
         ClientConnection* connection =
             new ClientConnection(peer, numberToGuess, processors);
         connections.push_back(std::move(connection));

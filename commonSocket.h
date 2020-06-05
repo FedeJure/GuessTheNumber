@@ -20,8 +20,8 @@ namespace common
         int Fd();
         void shutdownSocket();
         void closeSocket();
-        virtual size_t sendBuffer(std::vector<char>& buffer);
-        virtual size_t receiveBuffer(std::vector<char>& buffer);
+        virtual size_t sendBuffer(std::vector<unsigned char>& buffer);
+        virtual size_t receiveBuffer(std::vector<unsigned char>& buffer);
         virtual ~Socket();
     };
 

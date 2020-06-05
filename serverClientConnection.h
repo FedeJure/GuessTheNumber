@@ -8,13 +8,26 @@
 #include "./commonSocket.h"
 namespace server
 {
+    class ValidationDto {
+        public:
+        bool valid;
+        int goodCount;
+        int regularCount;
+        int wrongCount;
+
+        ValidationDto(int pgood, int pregular, int pwrong, bool pvalid)
+            :valid(pvalid),
+            goodCount(pgood),
+            regularCount(pregular),
+            wrongCount(pwrong){}
+    };
     class CommandProcessor;
     class ClientConnection {
         std::thread thread;
         std::atomic<bool> keepTalking;
         std::atomic<bool> running;
         common::Socket socket;
-        std::string number;
+        std::string numberToGuess;
         std::vector<CommandProcessor*>* processors;
 
         public:
@@ -28,6 +41,7 @@ namespace server
 
         private:
         void start();
+        server::ValidationDto validate(uint32_t num);
     };
 } // namespace server
 

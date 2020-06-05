@@ -29,7 +29,7 @@ void common::Socket::setOptions() {
     ip4addr.sin_port = htons(std::stoi(service));
 }
 
-size_t common::Socket::sendBuffer(std::vector<char>& buffer) {
+size_t common::Socket::sendBuffer(std::vector<unsigned char>& buffer) {
     size_t sent = 0;
     while (sent < buffer.size()) {
         size_t sended = send(fd, &buffer[sent], buffer.size()-sent,
@@ -40,7 +40,7 @@ size_t common::Socket::sendBuffer(std::vector<char>& buffer) {
     return sent;
 }
 
-size_t common::Socket::receiveBuffer(std::vector<char>& buffer) {
+size_t common::Socket::receiveBuffer(std::vector<unsigned char>& buffer) {
     size_t readed_size = 0;
     while (readed_size < buffer.size()) {
         size_t res = recv(fd, &buffer[readed_size],
