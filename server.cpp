@@ -33,6 +33,7 @@ void server::Server::start() {
 server::Server::~Server() {
     running = false;
     localSocket.shutdownSocket();
+    localSocket.closeSocket();
     for (const CommandProcessor* processor : processors) {
         delete processor;
     }
