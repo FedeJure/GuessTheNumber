@@ -15,26 +15,58 @@ server::Server::Server(std::string& numbersFileName,std::string& service)
 
 void server::Server::start() {
     while (running) {
-        common::Socket peer = localSocket.acceptConnection();
-        std::string numberToGuess = fileReader.getNext();
-        
-        ClientConnection* connection =
-            new ClientConnection(peer, numberToGuess, processors);
-        connections.push_back(std::move(connection));
-        for (size_t i = 0; i < connections.size(); i++) {
-            ClientConnection* con = connections[i];
-            if (!con->isRunning()) {
-                std::cout<<"Connection removed from clients"<< std::endl;
-                con->stop();
-                connections.erase(connections.begin()+i);
-                delete con;
-            }
+        try {
+            common::Socket peer = localSocket.acceptConnection();
+            std::string numberToGuess = fileReader.getNext();
+            
+            ClientConnection* connection =
+                new ClientConnection(peer, numberToGuess, processors);
+            connections.push_back(std::move(connection));
+            cleanDeadConnections();
+        }
+        catch(const std::exception& e) {
+            break;
         }
     }
 }
 
 server::Server::~Server() {
+    running = false;
+    localSocket.shutdownSocket();
     for (const CommandProcessor* processor : processors) {
         delete processor;
     }
+    cleanAllConnections();
+    thread.join();
+    printStadistics();
+}
+
+void server::Server::cleanDeadConnections() {
+    std::unique_lock<std::mutex> lock(m);
+    for (size_t i = 0; i < connections.size(); i++) {
+        ClientConnection* con = connections[i];
+        if (!con->isRunning()) {
+            con->isWinner() ? winnersCount++ : losersCount++;
+            con->stop();
+            connections.erase(connections.begin()+i);
+            delete con;
+        }
+    }
+}
+
+void server::Server::cleanAllConnections() {
+    std::unique_lock<std::mutex> lock(m);
+    for (size_t i = 0; i < connections.size(); i++) {
+        ClientConnection* con = connections[i];
+        con->isWinner() ? winnersCount++ : losersCount++;
+        con->stop();
+        connections.erase(connections.begin()+i);
+        delete con;
+    }
+}
+
+void server::Server::printStadistics() {
+    std::cout<<"Estadísticas:​ "<<std::endl;
+    std::cout<<"\tGanadores:​ "+std::to_string(winnersCount)<<std::endl;
+    std::cout<<"\tPerdedores:​ "+std::to_string(losersCount)<<std::endl;
 }

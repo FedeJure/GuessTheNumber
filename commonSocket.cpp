@@ -81,7 +81,7 @@ common::Socket common::SocketServer::acceptConnection() {
     size_t socket_size = sizeof(ip4addr);
     int accepted = accept(fd, (sockaddr*) &ip4addr,
         (socklen_t*)&socket_size);
-    if (accepted < -1) throw std::exception();
+    if (accepted < 0) throw std::exception();
     common::Socket newSocket(accepted, ip4addr);
     return newSocket;
 }

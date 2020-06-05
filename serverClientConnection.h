@@ -31,6 +31,7 @@ namespace server
         std::string numberToGuess;
         std::vector<CommandProcessor*>* processors;
         int attempts = 10;
+        bool winner = false;
 
         public:
         explicit ClientConnection(common::Socket providedSocket,
@@ -38,6 +39,7 @@ namespace server
             std::vector<CommandProcessor*>& processors);
         void stop();
         bool isRunning();
+        bool isWinner();
         std::string receiveNumber();
         std::string help();
         std::string surrender();

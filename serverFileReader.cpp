@@ -3,20 +3,21 @@
 #include "./serverFileReader.h"
 
 server::FileReader::FileReader(std::string& providedFileName)
-    : file(fileName), fileName(providedFileName) {
+    : fileName(providedFileName) {
+    file = std::ifstream(fileName); 
     validateFile();
 }
 
 void server::FileReader::validateFile() {
     std::string line;
-    std::istream_iterator<std::string> eos;
-    std::istream_iterator<std::string> iterator(file);
-    while (iterator != eos) {
-        line = *iterator;
+    while (file.peek() != EOF) {
+        std::string line;
+        std::getline(file, line);
         int numericLine = std::stoi(line);
         if (numericLine < 100 || numericLine > 999) throw std::exception();
-        iterator++;
     }
+    file.close();
+    file = std::ifstream(fileName);
 }
 
 std::string server::FileReader::getNext() {
@@ -30,4 +31,6 @@ std::string server::FileReader::getNext() {
     return number;
 }
 
-server::FileReader::~FileReader() {}
+server::FileReader::~FileReader() {
+    file.close();
+}

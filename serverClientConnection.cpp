@@ -55,13 +55,17 @@ void server::ClientConnection::start() {
 }
 
 void server::ClientConnection::stop() {
-    if (thread.joinable()) thread.join();
     socket.shutdownSocket();
     socket.closeSocket();
+    if (thread.joinable()) thread.join();
 }
 
 bool server::ClientConnection::isRunning() {
     return running;
+}
+
+bool server::ClientConnection::isWinner() {
+    return winner;
 }
 
 int32_t bigEndtoLocalEnd(std::vector<unsigned char> number) {
@@ -84,6 +88,7 @@ std::string server::ClientConnection::receiveNumber() {
     --attempts;
     if (validation.goodCount == 3) {
         running = false;
+        winner = true;
         return "Ganaste";
     }
     if (attempts == 0) {

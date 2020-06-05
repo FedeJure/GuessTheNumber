@@ -23,12 +23,16 @@ namespace server
         server::FileReader fileReader;
         common::SocketServer localSocket;
         std::thread thread;
+        int winnersCount = 0;
+        int losersCount = 0;
         void start();
+        void cleanDeadConnections();
+        void printStadistics();
+        void cleanAllConnections();
 
         public:
         Server(std::string& numbersFileName,
                 std::string& service);
-        void shutdown();
         ~Server();
     };
 } // namespace server
