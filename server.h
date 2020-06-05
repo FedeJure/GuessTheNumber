@@ -8,6 +8,7 @@
 #include "./serverClientConnection.h"
 #include "./serverFileReader.h"
 #include "./commonSocket.h"
+#include "./serverCommandProcessor.h"
 #define MAX_CONNECTIONS 20
 
 
@@ -17,6 +18,7 @@ namespace server
         std::mutex m;
         std::condition_variable notifier;
         std::vector<ClientConnection*> connections;
+        std::vector<CommandProcessor*> processors;
         bool running;
         server::FileReader fileReader;
         common::SocketServer localSocket;
