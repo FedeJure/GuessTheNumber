@@ -1,9 +1,9 @@
-
+#include "./clientArgumentHandler.h"
 
 #define CLIENT_SUCESS 0
 
 int main(int argc, char* argv[]) {
-    //handleo de argumentos de ejecución
+    client::ArgumentHandler argHandler(argc, argv);
 
     //conexion con servidor
 
