@@ -12,7 +12,8 @@ server::SurrenderCommandProcessor::~SurrenderCommandProcessor() {}
 std::string server::NumberCommandProcessor::operator()(char command,
             server::ClientConnection& client) {
     if (command != 'n') return "";
-    return "Not implemented";
+    std::string response = client.receiveNumber();
+    return response;
 }
 
 std::string server::HelpCommandProcessor::operator()(char command,

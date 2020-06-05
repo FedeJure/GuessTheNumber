@@ -23,6 +23,7 @@ namespace server
             std::vector<CommandProcessor*>& processors);
         void stop();
         bool isRunning();
+        std::string receiveNumber();
         ~ClientConnection();
 
         private:

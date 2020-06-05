@@ -46,3 +46,9 @@ void server::ClientConnection::stop() {
 bool server::ClientConnection::isRunning() {
     return running;
 }
+
+std::string server::ClientConnection::receiveNumber() {
+    std::vector<char> number(3);
+    socket.receiveBuffer(number);
+    return std::string(number.begin(), number.end());
+}
