@@ -41,11 +41,10 @@ server::ClientConnection::~ClientConnection() {
 void server::ClientConnection::start() {
     try {
         std::vector<unsigned char> command(1);
-        while (socket.receiveBuffer(command) > 0) {
+        while (running && socket.receiveBuffer(command) > 0) {
             for (CommandProcessor* processor : *processors) {
                 std::string response = (*processor)(command[0], *this);
-                std::cout<<response;
-                fflush(stdout);
+                std::cout<<response; fflush(stdout);
             }
         }
     }
@@ -86,11 +85,9 @@ std::string server::ClientConnection::receiveNumber() {
         return "Número inválido. Debe ser de 3 cifras no repetidas";
     if (validation.goodCount == 3) {
         running = false;
-        return "Ganaster";
-    }
-    else if (attempts == 0) {
-        running = false;
-        return "Perdiste";
+        return "Ganaste";
+    } else if (attempts == 0) {
+        surrender();
     }
     return validation.toString();
 }
@@ -100,8 +97,6 @@ server::ValidationDto server::ClientConnection::validate(
     if (num > 999 || num < 100) {
         return server::ValidationDto(0,0,0,false);
     }
-    std::cout<<numberToGuess<<std::endl; fflush(stdout);
-
     std::string toVerify = std::to_string(num);
     int good(0); int wrong(0); int regular(0);
     for (size_t i = 0; i < 3; i++) {
@@ -113,4 +108,19 @@ server::ValidationDto server::ClientConnection::validate(
             wrong++;
     }
     return server::ValidationDto(good,regular,wrong, true);
+}
+
+std::string server::ClientConnection::help() {
+    std::string response;
+    response.append("Comandos válidos:​\n\t​AYUDA: despliega la");
+    response.append(" lista de comandos válidos​\n\t​RENDIRSE: pierde");
+    response.append(" el juego automáticamente​\n\t​XXX: Número de");
+    response.append(" 3 cifras a ser enviado al servidor para ");
+    response.append("adivinar el número secreto");
+    return response;
+}
+
+std::string server::ClientConnection::surrender() {
+    running = false;
+    return "Perdiste";
 }

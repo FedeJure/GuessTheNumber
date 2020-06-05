@@ -39,6 +39,8 @@ namespace server
         void stop();
         bool isRunning();
         std::string receiveNumber();
+        std::string help();
+        std::string surrender();
         ~ClientConnection();
 
         private:

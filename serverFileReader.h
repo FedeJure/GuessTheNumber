@@ -11,7 +11,7 @@ namespace server
     class FileReader {
         std::ifstream file;
         std::mutex m;
-        std::istream_iterator<std::string> actualIterator;
+        std::string fileName;
         public:
         explicit FileReader(std::string& fileName);
         ~FileReader();

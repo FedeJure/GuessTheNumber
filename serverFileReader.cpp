@@ -2,8 +2,8 @@
 #include <string>
 #include "./serverFileReader.h"
 
-server::FileReader::FileReader(std::string& fileName)
-    : file(fileName), actualIterator(file) {
+server::FileReader::FileReader(std::string& providedFileName)
+    : file(fileName), fileName(providedFileName) {
     validateFile();
 }
 
@@ -21,11 +21,12 @@ void server::FileReader::validateFile() {
 
 std::string server::FileReader::getNext() {
     std::unique_lock<std::mutex> lock(m);
-    std::istream_iterator<std::string> eos;
-    if (actualIterator == eos)
-        actualIterator = std::istream_iterator<std::string>(file);
-    std::string number = *actualIterator;
-    //actualIterator++; TODO: arreglar.
+    if (file.peek() == EOF) {
+        file.close();
+        file = std::ifstream(fileName);
+    }
+    std::string number;
+    std::getline(file, number);
     return number;
 }
 
