@@ -20,6 +20,7 @@ namespace server
             goodCount(pgood),
             regularCount(pregular),
             wrongCount(pwrong){}
+        std::string toString();
     };
     class CommandProcessor;
     class ClientConnection {
@@ -29,6 +30,7 @@ namespace server
         common::Socket socket;
         std::string numberToGuess;
         std::vector<CommandProcessor*>* processors;
+        int attempts = 10;
 
         public:
         explicit ClientConnection(common::Socket providedSocket,

@@ -6,6 +6,24 @@
 #include "./serverCommandProcessor.h"
 #include "./serverClientConnection.h"
 
+std::string server::ValidationDto::toString() {
+    std::vector<std::string> validations;
+    if (goodCount > 0)
+        validations.push_back(std::to_string(goodCount)+" bien");
+    if (regularCount > 0)
+        validations.push_back(
+            std::to_string(regularCount)+" regular");
+    if (wrongCount > 0)
+        validations.push_back(std::to_string(wrongCount)+" mal");
+    std::string response;
+    bool addComma = false;
+    for (std::string val: validations) {
+        response+= addComma ? ", "+val : val;
+        addComma = true;
+    }
+    return response;
+}
+
 server::ClientConnection::ClientConnection(common::Socket providedSocket,
         std::string number,
         std::vector<server::CommandProcessor*>& processors)
@@ -64,21 +82,17 @@ std::string server::ClientConnection::receiveNumber() {
     socket.receiveBuffer(number);
     int32_t received = bigEndtoLocalEnd(number);
     server::ValidationDto validation = validate(received);
-    std::vector<std::string> validations;
-    if (validation.goodCount > 0)
-        validations.push_back(std::to_string(validation.goodCount)+" bien");
-    if (validation.regularCount > 0)
-        validations.push_back(
-            std::to_string(validation.regularCount)+" regular");
-    if (validation.wrongCount > 0)
-        validations.push_back(std::to_string(validation.wrongCount)+" mal");
-    std::string response;
-    bool addComma = false;
-    for (std::string val: validations) {
-        response+= addComma ? ", "+val : val;
-        addComma = true;
+    if (!validation.valid)
+        return "Número inválido. Debe ser de 3 cifras no repetidas";
+    if (validation.goodCount == 3) {
+        running = false;
+        return "Ganaster";
     }
-    return response;
+    else if (attempts == 0) {
+        running = false;
+        return "Perdiste";
+    }
+    return validation.toString();
 }
 
 server::ValidationDto server::ClientConnection::validate(
