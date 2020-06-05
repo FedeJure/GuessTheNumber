@@ -81,14 +81,17 @@ std::string server::ClientConnection::receiveNumber() {
     socket.receiveBuffer(number);
     int32_t received = bigEndtoLocalEnd(number);
     server::ValidationDto validation = validate(received);
-    if (!validation.valid)
-        return "Número inválido. Debe ser de 3 cifras no repetidas";
+    --attempts;
     if (validation.goodCount == 3) {
         running = false;
         return "Ganaste";
-    } else if (attempts == 0) {
-        surrender();
     }
+    if (attempts == 0) {
+        return surrender();
+    }
+    if (!validation.valid)
+        return "Número inválido. Debe ser de 3 cifras no repetidas";
+
     return validation.toString();
 }
 
