@@ -1,11 +1,15 @@
 #include <thread>
 #include <iostream>
 #include <vector>
+#include <string>
 #include "./commonSocket.h"
 #include "./serverClientConnection.h"
 
-server::ClientConnection::ClientConnection(common::Socket providedSocket)
-    : keepTalking(true), running(true), socket(providedSocket) {
+server::ClientConnection::ClientConnection(common::Socket providedSocket,
+                                            std::string numberToGuess)
+    : keepTalking(true), running(true), socket(providedSocket),
+        number(numberToGuess) {
+    std::cout<<"Init client connection with number: "<<number<<std::endl;
     thread = std::thread(&server::ClientConnection::start, this);
 }
 

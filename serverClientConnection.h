@@ -2,6 +2,7 @@
 #define CLIENT_CONNECTION_H_
 #include <thread>
 #include <atomic>
+#include <string>
 #include "./commonSocket.h"
 namespace server
 {
@@ -10,9 +11,11 @@ namespace server
         std::atomic<bool> keepTalking;
         std::atomic<bool> running;
         common::Socket socket;
+        std::string number;
 
         public:
-        explicit ClientConnection(common::Socket providedSocket);
+        explicit ClientConnection(common::Socket providedSocket,
+                                    std::string numberToGuess);
         void stop();
         bool isRunning();
         ~ClientConnection();

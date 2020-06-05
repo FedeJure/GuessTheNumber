@@ -13,7 +13,9 @@ server::Server::Server(std::string& numbersFileName,std::string& service)
 void server::Server::start() {
     while (running) {
         common::Socket peer = localSocket.acceptConnection();
-        ClientConnection* connection = new ClientConnection(peer);
+        std::string numberToGuess = fileReader.getNext();
+        ClientConnection* connection =
+            new ClientConnection(peer, numberToGuess);
         connections.push_back(std::move(connection));
         for (size_t i = 0; i < connections.size(); i++) {
             ClientConnection* con = connections[i];
