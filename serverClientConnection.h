@@ -37,7 +37,6 @@ namespace server
         explicit ClientConnection(common::Socket providedSocket,
             std::string numberToGuess,
             std::vector<CommandProcessor*>& processors);
-        void stop();
         bool isRunning();
         bool isWinner();
         std::string receiveNumber();
@@ -50,6 +49,7 @@ namespace server
         void sendResponse(std::string response);
         server::ValidationDto validate(uint16_t num);
         bool nonDuplicatesNumber(uint16_t num);
+        void stop();
     };
 } // namespace server
 

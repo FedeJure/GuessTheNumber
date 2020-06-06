@@ -7,9 +7,9 @@ server::Server::Server(std::string& numbersFileName,std::string& service)
       fileReader(numbersFileName),
       localSocket(service, MAX_CONNECTIONS) {
     thread = std::thread(&server::Server::start, this);
-    processors.push_back(new HelpCommandProcessor());
-    processors.push_back(new SurrenderCommandProcessor());
-    processors.push_back(new NumberCommandProcessor());
+    processors.push_back(std::move(new HelpCommandProcessor()));
+    processors.push_back(std::move(new SurrenderCommandProcessor()));
+    processors.push_back(std::move(new NumberCommandProcessor()));
 }
 
 void server::Server::start() {
@@ -21,7 +21,7 @@ void server::Server::start() {
             ClientConnection* connection =
                 new ClientConnection(peer, numberToGuess, processors);
             connections.push_back(std::move(connection));
-            cleanDeadConnections();
+            if (running )cleanDeadConnections();
         }
         catch(const std::exception& e) {
             break;
@@ -33,22 +33,25 @@ server::Server::~Server() {
     running = false;
     localSocket.shutdownSocket();
     localSocket.closeSocket();
-    for (const CommandProcessor* processor : processors) {
+    cleanAllConnections();
+    for (CommandProcessor* processor : processors) {
         delete processor;
     }
-    cleanAllConnections();
+    
     thread.join();
     printStadistics();
 }
 
 void server::Server::cleanDeadConnections() {
     std::unique_lock<std::mutex> lock(m);
-    for (size_t i = 0; i < connections.size(); i++) {
+    size_t size = connections.size();
+    int eliminatedCount = 0;
+    for (size_t i = 0; i < size; i++) {
         ClientConnection* con = connections[i];
         if (!con->isRunning()) {
             con->isWinner() ? winnersCount++ : losersCount++;
-            con->stop();
-            connections.erase(connections.begin()+i);
+            connections.erase(connections.begin()+i-eliminatedCount);
+            eliminatedCount++;
             delete con;
         }
     }
@@ -56,11 +59,10 @@ void server::Server::cleanDeadConnections() {
 
 void server::Server::cleanAllConnections() {
     std::unique_lock<std::mutex> lock(m);
-    for (size_t i = 0; i < connections.size(); i++) {
-        ClientConnection* con = connections[i];
+    size_t size = connections.size();
+    for (size_t i = 0; i < size; i++) {
+        ClientConnection* con = connections.back();
         con->isWinner() ? winnersCount++ : losersCount++;
-        con->stop();
-        connections.erase(connections.begin()+i);
         delete con;
     }
 }
