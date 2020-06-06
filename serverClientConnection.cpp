@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include "./commonSocket.h"
+#include "./commonUtils.h"
 #include "./serverCommandProcessor.h"
 #include "./serverClientConnection.h"
 
@@ -42,10 +43,12 @@ void server::ClientConnection::start() {
     try {
         std::vector<unsigned char> command(1);
         while (running && socket.receiveBuffer(command) > 0) {
+            std::string response;
             for (CommandProcessor* processor : *processors) {
-                std::string response = (*processor)(command[0], *this);
-                std::cout<<response; fflush(stdout);
+                response = (*processor)(command[0], *this);
+                if (response != "") break;
             }
+            sendResponse(response);
         }
     }
     catch(const std::exception& e) {
@@ -131,4 +134,13 @@ std::string server::ClientConnection::help() {
 std::string server::ClientConnection::surrender() {
     running = false;
     return "Perdiste";
+}
+
+void server::ClientConnection::sendResponse(std::string response) {
+    std::vector<unsigned char> buffer;
+    uint32_t size = response.size();
+    buffer = common::getBigEndianBuffer(size);
+    socket.sendBuffer(buffer);
+    buffer = std::vector<unsigned char>(response.begin(), response.end());
+    socket.sendBuffer(buffer);
 }

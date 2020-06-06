@@ -47,6 +47,7 @@ namespace server
 
         private:
         void start();
+        void sendResponse(std::string response);
         server::ValidationDto validate(uint32_t num);
     };
 } // namespace server

@@ -13,10 +13,7 @@ namespace client
         std::vector<client::CommandProcessor*> processors;
         bool running = true;
         void start();
-        uint32_t getNumber(std::vector<unsigned char> buffer);
-        std::vector<unsigned char> getBuffer(uint16_t num);
         std::string getResponse();
-        bool isLocalBigEndian();
 
         public:
         Client(std::string& host, std::string& service);

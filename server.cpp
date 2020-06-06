@@ -10,7 +10,6 @@ server::Server::Server(std::string& numbersFileName,std::string& service)
     processors.push_back(new HelpCommandProcessor());
     processors.push_back(new SurrenderCommandProcessor());
     processors.push_back(new NumberCommandProcessor());
-    std::cout<<"Init server with fd: "<< localSocket.Fd()<< std::endl;
 }
 
 void server::Server::start() {
