@@ -70,6 +70,6 @@ void server::Server::cleanAllConnections() {
 
 void server::Server::printStadistics() {
     std::cout<<"Estadísticas:​ "<<std::endl;
-    std::cout<<"\t Ganadores:​ "+std::to_string(winnersCount)<<std::endl;
+    std::cout<<"\tGanadores:​  "+std::to_string(winnersCount)<<std::endl;
     std::cout<<"\tPerdedores:​ "+std::to_string(losersCount)<<std::endl;
 }
