@@ -48,7 +48,8 @@ namespace server
         private:
         void start();
         void sendResponse(std::string response);
-        server::ValidationDto validate(uint32_t num);
+        server::ValidationDto validate(uint16_t num);
+        bool nonDuplicatesNumber(uint16_t num);
     };
 } // namespace server
 

@@ -30,7 +30,6 @@ server::ClientConnection::ClientConnection(common::Socket providedSocket,
         std::vector<server::CommandProcessor*>& processors)
     : keepTalking(true), running(true), socket(providedSocket),
         numberToGuess(number) {
-    std::cout<<"Init client connection with number: "<<numberToGuess<<std::endl;
     thread = std::thread(&server::ClientConnection::start, this);
     this->processors = &processors;
 }
@@ -75,7 +74,6 @@ std::string server::ClientConnection::receiveNumber() {
     std::vector<unsigned char> number(2);
     socket.receiveBuffer(number);
     uint16_t received = common::getNumberFromBigEndianShort(number);
-    std::cout<<received<<std::endl;
     server::ValidationDto validation = validate(received);
     --attempts;
     if (validation.goodCount == 3) {
@@ -93,8 +91,9 @@ std::string server::ClientConnection::receiveNumber() {
 }
 
 server::ValidationDto server::ClientConnection::validate(
-        uint32_t num) {
-    if (num > 999 || num < 100) {
+        uint16_t num) {
+    if ((num > 999 || num < 100) ||
+        !nonDuplicatesNumber(num)) {
         return server::ValidationDto(0,0,0,false);
     }
     std::string toVerify = std::to_string(num);
@@ -132,4 +131,11 @@ void server::ClientConnection::sendResponse(std::string response) {
     socket.sendBuffer(buffer);
     buffer = std::vector<unsigned char>(response.begin(), response.end());
     socket.sendBuffer(buffer);
+}
+
+bool server::ClientConnection::nonDuplicatesNumber(uint16_t num) {
+    std::string snum = std::to_string(num);
+    return (snum[0] != snum[1] &&
+        snum[1] != snum[2] &&
+        snum[0] != snum[2]);
 }
