@@ -52,7 +52,9 @@ std::string client::Client::number(uint32_t input) {
     uint16_t number = input;
     std::vector<unsigned char> buffer = common::getBigEndianBuffer(number);
     localSocket.sendBuffer(buffer);
-    return getResponse();
+    std::string response = getResponse();
+    if (response == "Ganaste" || response == "Perdiste") running = false;
+    return response;
 }
 std::string client::Client::surrender() {
     running = false;
