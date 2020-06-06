@@ -23,6 +23,9 @@ client::Client::Client(std::string& providedHost, std::string& providedService)
 client::Client::~Client() {
     localSocket.shutdownSocket();
     localSocket.closeSocket();
+    for (CommandProcessor* processor : processors) {
+        delete processor;
+    }
 }
 
 void client::Client::start() {
