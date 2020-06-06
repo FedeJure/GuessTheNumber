@@ -68,7 +68,7 @@ void server::Server::cleanAllConnections() {
 }
 
 void server::Server::printStadistics() {
-    std::cout<<"Estadísticas:​\n";
-    std::cout<<"\tGanadores:​  "+std::to_string(winnersCount);
-    std::cout<<"\n\tPerdedores:​ "+std::to_string(losersCount)<<"\n";
+    std::cout<<"Estadísticas:\n";
+    std::cout<<"\tGanadores:  "+std::to_string(winnersCount);
+    std::cout<<"\n\tPerdedores: "+std::to_string(losersCount)<<"\n";
 }
