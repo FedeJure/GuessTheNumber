@@ -58,10 +58,9 @@ std::string client::Client::number(uint32_t input) {
 }
 std::string client::Client::surrender() {
     running = false;
-    std::string response;
     std::vector<unsigned char> toSend = {'s'};
     localSocket.sendBuffer(toSend);
-    return response;
+    return getResponse();
 }
 
 std::string client::Client::getResponse() {
