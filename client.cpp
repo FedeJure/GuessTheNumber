@@ -64,8 +64,8 @@ std::string client::Client::surrender() {
 std::string client::Client::getResponse() {
     std::vector<unsigned char> length(4);
     localSocket.receiveBuffer(length);
-    uint32_t num = common::getNumberFromBigEndiann(length);
-    std::vector<unsigned char> string(num + 1);
+    uint32_t num = common::getNumberFromBigEndian(length);
+    std::vector<unsigned char> string(num);
     localSocket.receiveBuffer(string);
     std::string response(string.begin(), string.end());
     return response;

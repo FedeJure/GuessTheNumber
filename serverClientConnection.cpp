@@ -71,22 +71,11 @@ bool server::ClientConnection::isWinner() {
     return winner;
 }
 
-int32_t bigEndtoLocalEnd(std::vector<unsigned char> number) {
-    int aux = 0x1;
-    int32_t response;
-    bool localIsBig = ((char*)&aux)[0] == 0;
-    if (localIsBig) {
-        response = number[0] | number[1];
-        return response;
-    }
-    response = number[1] | number[0];
-    return response;
-}
-
 std::string server::ClientConnection::receiveNumber() {
     std::vector<unsigned char> number(2);
     socket.receiveBuffer(number);
-    int32_t received = bigEndtoLocalEnd(number);
+    uint16_t received = common::getNumberFromBigEndianShort(number);
+    std::cout<<received<<std::endl;
     server::ValidationDto validation = validate(received);
     --attempts;
     if (validation.goodCount == 3) {

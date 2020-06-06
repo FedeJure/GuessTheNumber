@@ -6,15 +6,19 @@
 #include <netinet/in.h>
 #include "./commonUtils.h"
 
-uint32_t common::getNumberFromBigEndiann(std::vector<unsigned char> buffer) {
-    int32_t response;
-    if (common::isLocalBigEndian()) {
-        response = buffer[0] | buffer[1] | buffer[2] | buffer[2];
-        return response;
-    }
-    response = buffer[3] | buffer[2] | buffer[1] | buffer[0];
-    return response;
+uint32_t common::getNumberFromBigEndian(std::vector<unsigned char> buffer) {
+    uint32_t response;
+    std::memcpy(&response, buffer.data(), sizeof(response));
+    return ntohl(response);
 }
+
+uint16_t common::getNumberFromBigEndianShort(
+    std::vector<unsigned char> number) {
+    uint16_t response;
+    std::memcpy(&response, number.data(), sizeof(response));
+    return ntohs(response);
+}
+
 std::vector<unsigned char> common::getBigEndianBuffer(uint16_t num) {
     std::vector<unsigned char> buffer(2);
     uint16_t netNum = htons(num);
@@ -29,5 +33,5 @@ std::vector<unsigned char> common::getBigEndianBuffer(uint32_t num) {
 }
 bool common::isLocalBigEndian() {
     int aux = 0x1;
-    return ((char*)&aux)[0] == 0; 
+    return ((char*)&aux)[0] == 1; 
 }
