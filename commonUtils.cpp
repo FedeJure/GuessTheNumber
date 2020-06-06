@@ -31,7 +31,3 @@ std::vector<unsigned char> common::getBigEndianBuffer(uint32_t num) {
     std::memcpy(buffer.data(), &netNum, 4);
     return buffer;
 }
-bool common::isLocalBigEndian() {
-    int aux = 0x1;
-    return ((char*)&aux)[0] == 1; 
-}

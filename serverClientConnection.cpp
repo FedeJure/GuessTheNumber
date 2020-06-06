@@ -112,9 +112,9 @@ server::ValidationDto server::ClientConnection::validate(
 
 std::string server::ClientConnection::help() {
     std::string response;
-    response.append("Comandos válidos:​\n\t​AYUDA: despliega la");
-    response.append(" lista de comandos válidos​\n\t​RENDIRSE: pierde");
-    response.append(" el juego automáticamente​\n\t​XXX: Número de");
+    response.append("Comandos válidos:\n\tAYUDA: despliega la");
+    response.append(" lista de comandos válidos\n\tRENDIRSE: pierde");
+    response.append(" el juego automáticamente\n\tXXX: Número de");
     response.append(" 3 cifras a ser enviado al servidor para ");
     response.append("adivinar el número secreto");
     return response;

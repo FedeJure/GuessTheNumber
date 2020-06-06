@@ -8,7 +8,6 @@ namespace common
     uint16_t getNumberFromBigEndianShort(std::vector<unsigned char> number);
     std::vector<unsigned char> getBigEndianBuffer(uint16_t num);
     std::vector<unsigned char> getBigEndianBuffer(uint32_t num);
-    bool isLocalBigEndian();
 } // namespace common
 
 
