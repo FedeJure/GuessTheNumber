@@ -102,7 +102,9 @@ void common::SocketServer::startListen() {
 
 common::SocketClient::SocketClient(std::string& providedHost,
                                         std::string& service)
-    : common::Socket(service), host(providedHost) {}
+    : common::Socket(service), host(providedHost) {
+        connectSocket();
+}
 
 void common::SocketClient::connectSocket() {
     struct sockaddr_in ip4addr = {0};
@@ -110,22 +112,22 @@ void common::SocketClient::connectSocket() {
     struct addrinfo hints = {0};
     int res;
     setOptions();
-    char* hostChar = (char*)malloc(host.size() + 1);
-    char* serviceChar = (char*)malloc(service.size() + 1);
     try {
-        host.copy(hostChar, host.size() + 1);
-        service.copy(serviceChar, service.size() + 1);
-        res = getaddrinfo(hostChar, serviceChar, &hints, &ai_list);
+        res = getaddrinfo(host.c_str(), service.c_str(), &hints, &ai_list);
         if (res < 0 ) throw std::exception();
         for (ptr = ai_list; (void*)ptr != NULL; ptr = ptr->ai_next) {
+            ip4addr.sin_addr.s_addr = *((uint32_t*) &
+                (((struct sockaddr_in*)ptr->ai_addr)->sin_addr));
+            ip4addr.sin_family = AF_INET;
+            ip4addr.sin_port = htons(atoi(service.c_str()));
             res = connect(fd, (struct sockaddr*)&ip4addr, sizeof(ip4addr));
             if (res == -1) continue;
         }
-        if (ptr == NULL) { freeaddrinfo(ai_list); }
+        if (ptr == NULL) {
+            freeaddrinfo(ai_list); 
+        }
     }
     catch(const std::exception& e) {
-        free(hostChar);
-        free(serviceChar);
         throw std::exception();
     }
 }
