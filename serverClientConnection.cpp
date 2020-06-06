@@ -106,7 +106,8 @@ server::ValidationDto server::ClientConnection::validate(
         else
             wrong++;
     }
-    return server::ValidationDto(good,regular,wrong, true);
+    int auxWrong = wrong == 3 ? 3 : 0;
+    return server::ValidationDto(good,regular,auxWrong, true);
 }
 
 std::string server::ClientConnection::help() {
