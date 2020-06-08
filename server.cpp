@@ -1,6 +1,9 @@
 #include <string>
 #include <utility>
 #include "server.h"
+#include "./serverHelpCommandProcessor.h"
+#include "./serverNumberCommandProcessor.h"
+#include "./serverSurrenderCommandProcessor.h"
 
 server::Server::Server(std::string& numbersFileName,std::string& service)
     : running(true),
