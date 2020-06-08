@@ -15,7 +15,7 @@ namespace server {
         public:
         virtual std::string operator()(char command,
             server::ClientConnection& client) = 0;
-        virtual ~CommandProcessor() {};
+        virtual ~CommandProcessor() {}
     };
 } // namespace server
 

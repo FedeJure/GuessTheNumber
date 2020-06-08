@@ -5,6 +5,10 @@
 #include <vector>
 #include "./client.h"
 #include "./clientCommandProcessor.h"
+#include "./clientHelpCommandProcessor.h"
+#include "./clientSurrenderCommandProcessor.h"
+#include "./clientNumberCommandProcessor.h"
+#include "./clientInvalidCommandProcessor.h"
 #include "./commonUtils.h"
 
 client::Client::Client(std::string& providedHost, std::string& providedService)
